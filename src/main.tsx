@@ -1,22 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
-import dicomFile from "./assets/case1_008.dcm";
-import cornerstone from "cornerstone-core";
-import cornerstoneWADOImageLoader from "cornerstone-wado-image-loader";
-import dicomParser from "dicom-parser";
-
-cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
-cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
-
-cornerstone.loadAndCacheImage("wadouri:" + dicomFile).then((image: unknown) => {
-  console.log("image", image);
-});
-
-// const imageId = cornerstoneWADOImageLoader.wadouri.(dicomFile);
-// cornerstoneWADOImageLoader.loadImage(imageId).then((image: unknown) => {
-//   console.log(image);
-// });
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
+import "./main.css";
+import DicomVoxel from "./dicomVoxel";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode></React.StrictMode>
+  <React.StrictMode>
+    <Canvas>
+      <color attach="background" args={["white"]} />
+      <camera position={[0, 0, -20]} />
+      <ambientLight />
+      <pointLight position={[10, 10, 10]} />
+
+      <DicomVoxel />
+      <OrbitControls />
+    </Canvas>
+  </React.StrictMode>
 );
