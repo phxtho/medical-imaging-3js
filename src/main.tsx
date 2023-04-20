@@ -16,26 +16,24 @@ import * as THREE from "three";
 cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 // @ts-ignore
-const { imageFrame } = await cornerstone.loadAndCacheImage(
-  "wadouri:" + dicomFile
-);
+cornerstone.loadAndCacheImage("wadouri:" + dicomFile).then(({ imageFrame }) => {
+  const texture = createTexture(imageFrame);
+  const aspect = imageFrame.columns / imageFrame.rows;
+  const width = 7;
 
-const texture = createTexture(imageFrame);
-const aspect = imageFrame.columns / imageFrame.rows;
-const width = 7;
-
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <Canvas>
-      <color attach="background" args={["white"]} />
-      <camera position={[0, 0, -30]} />
-      <ambientLight />
-      <pointLight position={[10, 10, 10]} />
-      <mesh position={[0, 0, 0]}>
-        <planeGeometry args={[width, width * aspect, 1, 1]} />
-        <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
-      </mesh>
-      <OrbitControls />
-    </Canvas>
-  </React.StrictMode>
-);
+  ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+    <React.StrictMode>
+      <Canvas>
+        <color attach="background" args={["white"]} />
+        <camera position={[0, 0, -30]} />
+        <ambientLight />
+        <pointLight position={[10, 10, 10]} />
+        <mesh position={[0, 0, 0]}>
+          <planeGeometry args={[width, width * aspect, 1, 1]} />
+          <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
+        </mesh>
+        <OrbitControls />
+      </Canvas>
+    </React.StrictMode>
+  );
+});
