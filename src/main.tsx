@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useRef } from "react";
 import ReactDOM from "react-dom/client";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import "./main.css";
 // @ts-ignore
@@ -19,21 +19,42 @@ cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 cornerstone.loadAndCacheImage("wadouri:" + dicomFile).then(({ imageFrame }) => {
   const texture = createTexture(imageFrame);
   const aspect = imageFrame.columns / imageFrame.rows;
-  const width = 7;
 
   ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
       <Canvas>
-        <color attach="background" args={["white"]} />
+        <color attach="background" args={["#fdfcf9"]} />
         <camera position={[0, 0, -30]} />
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
-        <mesh position={[0, 0, 0]}>
-          <planeGeometry args={[width, width * aspect, 1, 1]} />
-          <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
-        </mesh>
+        <RotatingPlaneMesh texture={texture} planeWidth={4} aspect={aspect} />
         <OrbitControls />
       </Canvas>
     </React.StrictMode>
   );
 });
+
+const RotatingPlaneMesh = ({
+  texture,
+  planeWidth,
+  aspect,
+}: {
+  texture: THREE.Texture;
+  planeWidth: number;
+  aspect: number;
+}) => {
+  const meshRef = useRef<THREE.Mesh>();
+
+  useFrame(({ clock }) => {
+    if (!meshRef.current) return;
+    meshRef.current.rotation.y = clock.getElapsedTime() * 0.4;
+  });
+
+  return (
+    //@ts-ignore
+    <mesh position={[0, 0, 0]} ref={meshRef}>
+      <planeGeometry args={[planeWidth, planeWidth * aspect, 1, 1]} />
+      <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
+    </mesh>
+  );
+};
